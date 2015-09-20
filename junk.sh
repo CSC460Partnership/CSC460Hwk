@@ -44,7 +44,7 @@ else   # Assumes whatever is listed is a filename
 	if [ -a $dump ]; then   # If RecycleBin exists 
         if [ -d $dump ]; then  # If RecycleBin is a directory
             for file in $*; do   # Case I
-                echo $file
+                #echo $file
                 if [ -n "$(find ~ -name $file)" ]; then  # If file is found
                     mv $(find ~ -name $file) $dump  # mv command moves all nested files if $file is a directory
                 else

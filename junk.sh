@@ -41,12 +41,12 @@ elif [ "$1" = "-p" ]; then
 
 #########  Number 4  ##########
 else   # Assumes whatever is listed is a filename
-	if [ -a $dump ]; then   # If RecycleBin exists 
+	if [ -e $dump ]; then   # If RecycleBin exists 
         if [ -d $dump ]; then  # If RecycleBin is a directory
             for file in $*; do   # Case I
                 #echo $file
-                if [ -n "$(find ~ -name $file)" ]; then  # If file is found
-                    mv $(find ~ -name $file) $dump  # mv command moves all nested files if $file is a directory
+                if [ -e $file ]; then  # If file is found
+                    mv $file $dump  # mv command moves all nested files if $file is a directory
                 else
                     echo "$file not found"
                 fi
@@ -57,8 +57,8 @@ else   # Assumes whatever is listed is a filename
     else   # RecycleBin does not exist
         mkdir $dump   # Case II
         for file in $*; do   # Case I again
-            if [ -n "$(find ~ -name $file)" ]; then  # If file is found
-                mv $(find ~ -name $file) $dump  # mv command moves all nested files if $file is a directory
+            if [ -e $file ]; then  # If file is found
+                mv $file $dump  # mv command moves all nested files if $file is a directory
             else   
                 echo "$file not found"
             fi

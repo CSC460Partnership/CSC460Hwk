@@ -1,5 +1,5 @@
 # !bin/bash
-# Author: Aaron Hinckley and Zach Metcafe
+# Author: Aaron Hinckley and Zach Metcalf
 
 dump=~/RecycleBin   # NOTE: Variable assignments do not have spaces
                     # NOTE: either use for [ "" ] or [[]] for string operations 
@@ -65,6 +65,3 @@ else   # Assumes whatever is listed is a filename
         done
     fi
 fi
-
-
-

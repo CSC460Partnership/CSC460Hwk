@@ -40,7 +40,7 @@ while getopts "lp" opt; do
         ;;
   esac
 done 
-if [ $# -eq 0 ];
+if [ $# -eq 0 ]; #checks to see if no opts were passed
 then
   echo "-----------------------------------------------------------------------------------------------------------------------"
   echo "The command junk emulates the use of a recycle bin in the command line by keeping junk files in the location ~/RecycleBin"

@@ -17,6 +17,12 @@
 	2. type:	./generate [n]  to EXECUTE with integer n child processes
 	OR
 	3. type:    ./generate  for a HELP message
+	DISTRIBUTION/SUBTASKS:  Aaron Hinckley: 50%
+                                Initial problem solving strategy
+                                Code structure
+                            Zach Metcalf: 50%
+                                Output formatting
+                                Debugging
 =============================================================*/
 
 #include <iostream>

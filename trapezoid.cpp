@@ -36,10 +36,12 @@ class trapSlave{
         float left, right;  // endpoints of individual trapezoid
         float slaveNum;
         float delta;
-        float arbFunction(int x){
-            return (x^2 + 2*x + 4);
+        float arbFunction(float x){
+            return (x*x) + (2*x) + 4;
         }
         float area(){
+            cout << "       f(left): " << arbFunction(left) << endl;
+            cout << "       f(right): " << arbFunction(right) << endl;
             return (((arbFunction(left) + arbFunction(right))/2) * delta);
         }
 };
@@ -80,25 +82,20 @@ int main(int argc, char* argv[]){
     float totalArea = 0;
     int counter = 1;
     trapSlave dummy; 
-    // Endpoints
-    //dummy.left = left;
-    //dummy.right = left + delta;
-    //dummy.slaveNum = 1;
-    //counter ++;
-    //totalArea += dummy.area();
-    //dummy.left = right - delta;
-    //dummy.right = right;
-    //dummy.slaveNum = 2;
-    //counter ++;
-    //totalArea += dummy.area();
-    for(int i = 0; i <= numTraps; i ++){
+    cout << "delta: " << delta << endl;
+    for(int i = 0; i < numTraps; i ++){
         // Make the dummy object
         dummy.left = left + i*delta;
         dummy.right = dummy.left + delta;
         dummy.slaveNum = counter;
         dummy.delta = delta;
         counter ++;
+        cout << "Iteration: " << i << endl;
+        cout << "   left: " << dummy.left << endl;
+        cout << "   right: " << dummy.right << endl;
         // Pipey stuff below here...
+        
+        cout << "   area: " << dummy.area() << endl;
         totalArea += dummy.area();
     }
     cout << "Approximate Area: " << totalArea << endl;

@@ -5,7 +5,7 @@
 	LAST MODIFIED DATE:	9-20-2015
 	DESCRIPTION:	This program uses unix pipes to calculate the integral of a function using the
                     trapezoid rule. It uses a master process to spawn at most 8 slave processes
-                    each calculating subinterval trapezoid. The slave processes may calculate more
+                    each calculating a subinterval trapezoid. The slave processes may calculate more
                     than one interval depending on the user input for number of intervals in the
                     trapezoid rule. 
 	NOTE:	na
@@ -27,24 +27,13 @@
 
 #include <iostream>
 #include <unistd.h>
+#include <stdio.h>
+#include "trapSlave.h"
 
 using namespace std;
 
-class trapSlave{
-    public:
-    
-        float left, right;  // endpoints of individual trapezoid
-        float slaveNum;
-        float delta;
-        float arbFunction(float x){
-            return (x*x) + (2*x) + 4;
-        }
-        float area(){
-            cout << "       f(left): " << arbFunction(left) << endl;
-            cout << "       f(right): " << arbFunction(right) << endl;
-            return (((arbFunction(left) + arbFunction(right))/2) * delta);
-        }
-};
+int pipes[9][2];
+
 
 int main(int argc, char* argv[]){
     //------------------ Error Checking -------------------------
@@ -74,29 +63,54 @@ int main(int argc, char* argv[]){
         cout << "m must be in range (0,8]" << endl;
         return 0;
     }
+    //------------------------------------------------------------------------
+    int status,pid;
     float left = atof(argv[1]);
     float right = atof(argv[2]);
     int trapCounter = 0;
     
     float delta = ((right - left) / numTraps);
     float totalArea = 0;
+    float message;
     int counter = 1;
-    trapSlave dummy; 
-    cout << "delta: " << delta << endl;
+    trapSlave dummy;
+        
+    status = pipe(pipes[0]);
+    status = pipe(pipes[8]);
+    if(status == -1){
+        perror("Pipe did not work");
+        exit(1);
+    }
     for(int i = 0; i < numTraps; i ++){
         // Make the dummy object
         dummy.left = left + i*delta;
         dummy.right = dummy.left + delta;
-        dummy.slaveNum = counter;
         dummy.delta = delta;
         counter ++;
+        
         cout << "Iteration: " << i << endl;
         cout << "   left: " << dummy.left << endl;
         cout << "   right: " << dummy.right << endl;
         // Pipey stuff below here...
-        
-        cout << "   area: " << dummy.area() << endl;
-        totalArea += dummy.area();
+        pid = fork();
+        if(pid == -1){
+            perror("Trouble");
+            exit(2);
+        }
+        else if (pid == 0){  // Child code
+            cout << "Child created" << endl;
+            write(pipes[0][1], &dummy, sizeof(dummy));
+            cout << "write successful" << endl;
+            execl("child","", to_string(&pipes[0][0]).c_str(), to_string(&pipes[8][1]).c_str(),NULL);
+            cout << "execl did not work" << endl;
+            return 0;
+        }
+        else{
+            //close(pipes[0][1]);
+            read(pipes[8][0], &message, sizeof(float));
+            cout << "Received message" << endl;
+            totalArea += message;
+        }
     }
     cout << "Approximate Area: " << totalArea << endl;
         

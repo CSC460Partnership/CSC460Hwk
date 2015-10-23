@@ -28,15 +28,35 @@
 #include <iostream>
 #include <unistd.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include "trapSlave.h"
 
 using namespace std;
 
 int pipes[9][2];
+int slaveJobCount[7];
+int numTraps, numSlaves, trapCounter;
+float a, b, totalArea, smallArea, delta;
+
+trap makeTrap(float a, float b, float delta){
+    trap temp;
+    temp.a = a + trapCounter * delta;
+    temp.b = temp.a + delta;
+    temp.delta = delta;
+    return temp;
+}
 
 
 int main(int argc, char* argv[]){
-    //------------------ Error Checking -------------------------
+    const int rHead = 0, wHead = 1;
+    int bytes, slaveCounter;
+    numTraps = atoi(argv[3]);
+    numSlaves = atoi(argv[4]);
+    a = atof(argv[1]);
+    b = atof(argv[2]);
+   
+    //----------------- - Error Checking -------------------------
     if(argc == 1){
         cout << "=============================================================================" << endl;
         cout << "Correct Usage:  ./trapezoid left right n m " << endl;
@@ -51,8 +71,6 @@ int main(int argc, char* argv[]){
         cout << "Note n > 0 and 0 < m <= 8" << endl;
         return 0;
     }
-    int numTraps = atoi(argv[3]);
-    int numSlaves = atoi(argv[4]);
     if(numTraps <= 0){
         cout << "Invalid trapezoid number n!!! " << endl;
         cout << "n must be greater than zero!!!" << endl;
@@ -63,56 +81,59 @@ int main(int argc, char* argv[]){
         cout << "m must be in range (0,8]" << endl;
         return 0;
     }
-    //------------------------------------------------------------------------
-    int status,pid;
-    float left = atof(argv[1]);
-    float right = atof(argv[2]);
-    int trapCounter = 0;
-    
-    float delta = ((right - left) / numTraps);
-    float totalArea = 0;
-    float message;
-    int counter = 1;
-    trapSlave dummy;
-        
-    status = pipe(pipes[0]);
-    status = pipe(pipes[8]);
-    if(status == -1){
-        perror("Pipe did not work");
-        exit(1);
+    if(a > b){
+        cout << "Invalid range integers!!!" << endl;
+        cout << "In [left,right], left must be greater than right!!!" << endl;
+        return 0;
     }
-    for(int i = 0; i < numTraps; i ++){
-        // Make the dummy object
-        dummy.left = left + i*delta;
-        dummy.right = dummy.left + delta;
-        dummy.delta = delta;
-        counter ++;
-        
-        cout << "Iteration: " << i << endl;
-        cout << "   left: " << dummy.left << endl;
-        cout << "   right: " << dummy.right << endl;
-        // Pipey stuff below here...
-        pid = fork();
-        if(pid == -1){
-            perror("Trouble");
-            exit(2);
+      
+    delta = ((b - a) / numTraps);
+    totalArea = 0;
+    trapCounter = 0;
+    slaveCounter = 0;
+    trap dummy;
+   
+    
+    //------------ Create Pipes Needed ----------------------
+    for(int i = 0; i < min(numTraps,numSlaves)+1; i ++){
+        if(pipe(pipes[i]) == -1){
+            cout << "Pipe number " << i << " failed" << endl;
+            exit(0);
         }
-        else if (pid == 0){  // Child code
-            cout << "Child created" << endl;
-            write(pipes[0][1], &dummy, sizeof(dummy));
-            cout << "write successful" << endl;
-            execl("child","", to_string(&pipes[0][0]).c_str(), to_string(&pipes[8][1]).c_str(),NULL);
-            cout << "execl did not work" << endl;
-            return 0;
-        }
-        else{
-            //close(pipes[0][1]);
-            read(pipes[8][0], &message, sizeof(float));
-            cout << "Received message" << endl;
-            totalArea += message;
+    }
+    pipe(pipes[8]);
+    // Create Slaves
+    //or(int s = 0; s < min(numSlaves, numTraps); s ++){
+    while(numTraps != trapCounter){
+        pid_t returnVal = fork();
+        switch(returnVal){
+        case -1:
+            cout << "Fork failed" << endl;
+            exit(0);
+        case 0:  // child code
+            cout << "Fork created" << endl;
+            execl("child","",&pipes[slaveCounter][rHead], &pipes[8][wHead],NULL);
+            cout << "execl failed" << endl;
+            exit(0);
+        default : // parent code
+            dummy = makeTrap(a,b,delta);
+            bytes = write(pipes[slaveCounter][wHead], &dummy, sizeof(dummy));
+            if(bytes != sizeof(dummy)){
+                cout << "Error in master write to pipe" << endl;
+                exit(0);
+            }
+            bytes = read(pipes[8][rHead], &smallArea, sizeof(smallArea));
+            if(bytes != sizeof(smallArea)){
+                cout << "Parent read error" << endl;
+                exit(0);
+            }
+            cout << "Parent read: " << smallArea << endl;
+            totalArea += smallArea;
+            slaveJobCount[slaveCounter] += 1;
+            trapCounter ++;
+            slaveCounter ++;
         }
     }
     cout << "Approximate Area: " << totalArea << endl;
-        
     return 0;
-}
+    }

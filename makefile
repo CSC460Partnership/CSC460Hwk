@@ -1,10 +1,7 @@
 # makefile for trapezoid.cpp
 
-trapezoid: trapezoid.cpp child.o trapSlave.o
-	g++ trapezoid.cpp child.o trapSlave.o -o trapezoid
+trapezoid: trapezoid.cpp trapSlave.h child
+	g++ --std=c++11 trapezoid.cpp -o trapezoid
 
-child: child.cpp
-	g++ -c child.cpp -o child.o
-
-trapSlave: trapSlave.cpp
-	g++ -c trapSlave.cpp -o trapSlave.o
+child: child.cpp trapSlave.h
+	g++ --std=c++11 child.cpp -o child

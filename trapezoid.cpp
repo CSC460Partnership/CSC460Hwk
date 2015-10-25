@@ -28,36 +28,50 @@
 #include <iostream>
 #include <unistd.h>
 #include <stdio.h>
-#include <sys/types.h>
 #include <sys/wait.h>
+#include <cstdlib>
+#include <fcntl.h>
 #include "trapSlave.h"
 
 using namespace std;
 
 int pipes[9][2];
-int slaveJobCount[7];
-int numTraps, numSlaves, trapCounter;
-float a, b, totalArea, smallArea, delta;
+int slaveJobCount[8];
+int numTraps, numSlaves, trapIndex, bytes;
+int iteration = 0;
+const int rHead = 0, wHead = 1;
+float a, b, totalArea, delta;
+trap recvTrap;
+trap sendTrap;
 
-trap makeTrap(float a, float b, float delta){
+trap makeTrap(int s, float delta){
     trap temp;
-    temp.a = a + trapCounter * delta;
+    temp.a = a + (trapIndex * delta);
     temp.b = temp.a + delta;
     temp.delta = delta;
+    temp.slaveNum = s;
     return temp;
 }
-
-
+void writeTrap(trap temp){
+    bytes = write(pipes[temp.slaveNum][wHead], &temp, sizeof(temp));
+    if(bytes != sizeof(temp)){
+        cout << "Error in master write to pipe" << endl;
+        exit(0);
+    }
+    //cout << "Process number " << s << " executing" << endl;
+}
+trap readTrap(){
+    trap temp;
+    bytes = read(pipes[8][rHead], &temp, sizeof(temp));
+    if(bytes != sizeof(temp)){
+        cout << "Parent read error" << endl;
+        exit(0);
+    }
+    return temp;
+}
 int main(int argc, char* argv[]){
-    const int rHead = 0, wHead = 1;
-    int bytes, slaveCounter;
-    numTraps = atoi(argv[3]);
-    numSlaves = atoi(argv[4]);
-    a = atof(argv[1]);
-    b = atof(argv[2]);
-   
     //----------------- - Error Checking -------------------------
-    if(argc == 1){
+    if(argc < 5){
         cout << "=============================================================================" << endl;
         cout << "Correct Usage:  ./trapezoid left right n m " << endl;
         cout << "With interval [left,right], integer n intervals and integer m subprocesses" << endl;
@@ -71,6 +85,11 @@ int main(int argc, char* argv[]){
         cout << "Note n > 0 and 0 < m <= 8" << endl;
         return 0;
     }
+    numTraps = atoi(argv[3]);
+    numSlaves = atoi(argv[4]);
+    a = atof(argv[1]);
+    b = atof(argv[2]);
+    trap trapBox[numTraps];
     if(numTraps <= 0){
         cout << "Invalid trapezoid number n!!! " << endl;
         cout << "n must be greater than zero!!!" << endl;
@@ -86,54 +105,110 @@ int main(int argc, char* argv[]){
         cout << "In [left,right], left must be greater than right!!!" << endl;
         return 0;
     }
-      
     delta = ((b - a) / numTraps);
     totalArea = 0;
-    trapCounter = 0;
-    slaveCounter = 0;
-    trap dummy;
-   
-    
+    trapIndex = 0;
     //------------ Create Pipes Needed ----------------------
-    for(int i = 0; i < min(numTraps,numSlaves)+1; i ++){
+    for(int i = 0; i < min(numTraps,numSlaves); i ++){
         if(pipe(pipes[i]) == -1){
             cout << "Pipe number " << i << " failed" << endl;
             exit(0);
         }
     }
     pipe(pipes[8]);
-    // Create Slaves
-    //or(int s = 0; s < min(numSlaves, numTraps); s ++){
-    while(numTraps != trapCounter){
+    // ----------- Make trapezoids -------------
+    for(int t = 0; t < numTraps; t ++){  
+        trapBox[t] = makeTrap(0,delta);
+        trapIndex ++;
+    }
+    // Create Slaves and start processing
+    for(int i = 0; i < 8; i ++){
+        slaveJobCount[i] = 0;
+    }
+    
+    trapIndex = 0;
+    for(int s = 0; s < min(numSlaves, numTraps); s ++){
         pid_t returnVal = fork();
         switch(returnVal){
         case -1:
             cout << "Fork failed" << endl;
             exit(0);
         case 0:  // child code
-            cout << "Fork created" << endl;
-            execl("child","",&pipes[slaveCounter][rHead], &pipes[8][wHead],NULL);
+            execl("child","",&pipes[s][rHead], &pipes[8][wHead],NULL);
             cout << "execl failed" << endl;
             exit(0);
-        default : // parent code
-            dummy = makeTrap(a,b,delta);
-            bytes = write(pipes[slaveCounter][wHead], &dummy, sizeof(dummy));
-            if(bytes != sizeof(dummy)){
-                cout << "Error in master write to pipe" << endl;
-                exit(0);
-            }
-            bytes = read(pipes[8][rHead], &smallArea, sizeof(smallArea));
-            if(bytes != sizeof(smallArea)){
-                cout << "Parent read error" << endl;
-                exit(0);
-            }
-            cout << "Parent read: " << smallArea << endl;
-            totalArea += smallArea;
-            slaveJobCount[slaveCounter] += 1;
-            trapCounter ++;
-            slaveCounter ++;
+        default : // parent code-- initialize the sending and recv
+            trapBox[s].slaveNum = s;
+            trapBox[s].n = s;
+            writeTrap(trapBox[trapIndex]);
+            //cout << "Init with trapezoid " << trapIndex << endl;
+            trapIndex ++;
+            //cout << "Sent endpoints: [" << sendTrap.a << "," << sendTrap.b << "]" << endl;
         }
     }
+    int trapsUsed = 0;
+    //cout << "Starting trapIndex: " << trapIndex << endl;
+    for(;;){// master is listening, feed trapezoids :)
+        trap recvTrap = readTrap();
+        trapsUsed ++;
+        totalArea += recvTrap.area;
+        slaveJobCount[recvTrap.slaveNum] ++;
+        //cout << "Process number " << recvTrap.slaveNum << " finished" << endl;
+        //cout << "   trapIndex: " << trapIndex << endl;
+        //cout << "   trapsUsed: " << trapsUsed << endl;
+        //cout << "   trap passed: " << recvTrap.n << endl;
+        //cout << "   Interval: " << "[" << recvTrap.a << "," << recvTrap.b << "]" << endl;
+        //cout << "   Delta: " << delta << endl;
+        //cout << "   Added area: " << recvTrap.area << endl;
+        //cout << "   Total area: " << totalArea << endl;
+        //cout << "   With job count: " << slaveJobCount[recvTrap.slaveNum] << endl;
+        if(trapIndex < numTraps){  // Still more trapezoids to send
+            trapBox[trapIndex].slaveNum = recvTrap.slaveNum;
+            trapBox[trapIndex].n = trapIndex;
+            writeTrap(trapBox[trapIndex]);
+            trapIndex ++;
+        }
+        else{
+            while(trapsUsed < numTraps){  // a child needs to be read still
+                trap recvTrap = readTrap();
+                trapsUsed ++;
+                totalArea += recvTrap.area;
+                slaveJobCount[recvTrap.slaveNum] ++;
+                //cout << "Process number " << recvTrap.slaveNum << " finished" << endl;
+                //cout << "   trapIndex: " << trapIndex << endl;
+                //cout << "   trapsUsed: " << trapsUsed << endl;
+                //cout << "   trap passed: " << recvTrap.n << endl;
+                //cout << "   Interval: " << "[" << recvTrap.a << "," << recvTrap.b << "]" << endl;
+                //cout << "   Delta: " << delta << endl;
+                //cout << "   Added area: " << recvTrap.area << endl;
+                //cout << "   Total area: " << totalArea << endl;
+                //cout << "   With job count: " << slaveJobCount[recvTrap.slaveNum] << endl;
+            }
+            break;
+        }
+        
+    }
+    int max = 0;
+    int maxValue = 0;
+    for(int i = 0; i < numSlaves; i ++){
+        cout << "Slave number " << i << " trapezoid(s): " << slaveJobCount[i] << endl;
+        if(slaveJobCount[i] >= maxValue){
+            max = i;
+            maxValue = slaveJobCount[i];
+        }
+    }
+    cout << "============================================================================" << endl;
+    cout << "Congratulations to process number " << max << " for doing the most work!!!" << endl;
+    cout << "==============================================================================" << endl;
+    // Terminate all children processes and close all pipes
+    for(int s = 0; s < min(numSlaves,numTraps); s ++){
+        trap sendTrap = makeTrap(s,-1);
+        writeTrap(sendTrap);
+        close(pipes[s][0]);
+        close(pipes[s][1]);
+    }
+    close(pipes[8][0]);
+    close(pipes[8][1]);
     cout << "Approximate Area: " << totalArea << endl;
     return 0;
     }

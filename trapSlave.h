@@ -5,5 +5,6 @@
 using namespace std;
 
 struct trap{
-    float a, b, delta;  // endpoints of individual trapezoid
+    float a, b, delta, area;  // endpoints of individual trapezoid
+    int slaveNum, n;
 };

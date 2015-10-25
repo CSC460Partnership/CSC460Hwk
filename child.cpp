@@ -7,23 +7,44 @@
 
 using namespace std;
 
-int main(int argc, char* argv[]){
-    float area;
-    int* source = (int*) argv[1];
-    int* destination = (int*) argv[2];
-    trapSlave task;
-    int* t1;
-    char buf[sizeof(task)];    
-    
-    read(*source, buf,sizeof(task));
-    t1 = (trapSlave*) buf;
-    
-    task = *t1;
-    cout << task.left << endl;
-    area = task.area();
-    cout << "The child calculated area: " << area << endl;
-    write(*destination, &area, sizeof(float));
-    return 0;
-    
-    
+float arbFunction(float x){
+    return (x*x) + (2*x) + 4;
 }
+
+float area(float a, float b, float delta){
+    return (((arbFunction(a) + arbFunction(b))/2) * delta);
+}   
+
+int main(int argc, char* argv[]){
+    trap temp;
+    int bytes;
+    float tempArea;
+    float slaveInfo[2];
+     
+    for(;;){
+        bytes = read(*argv[1], &temp, sizeof(temp));
+        if(bytes != sizeof(temp)){
+            cout << sizeof(temp) << endl;
+            cout << bytes << endl;
+            cout << "Child read error" << endl;
+            close(*argv[1]);
+            return 0;
+        }
+        if(temp.delta == -1){  // Terminate Signal, close pipes
+            close(*argv[1]);
+            close(*argv[2]);
+            break;
+        }
+        tempArea = area(temp.a,temp.b, temp.delta);
+        temp.area = tempArea;
+        bytes = write(*argv[2], &temp, sizeof(temp));
+        if(bytes != sizeof(temp)){
+            cout << "Child write error" << endl;
+            close(*argv[2]);
+            return 0;
+        }
+    }
+    return 0;
+}
+    
+    

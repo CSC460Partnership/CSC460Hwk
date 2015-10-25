@@ -1,36 +1,39 @@
 /*=============================================================
-	COURSE:	CSC460, assignment 4
+	COURSE:	CSC460, Assignment 4
 	PROGRAMMERS: 	Aaron Hinckley (ah) and Zach Metcalf (zm)
 	MODIFIED BY: 	na
-	LAST MODIFIED DATE:	9-20-2015
+	LAST MODIFIED DATE:	9-25-2015
 	DESCRIPTION:	This program uses unix pipes to calculate the integral of a function using the
                     trapezoid rule. It uses a master process to spawn at most 8 slave processes
                     each calculating a subinterval trapezoid. The slave processes may calculate more
                     than one interval depending on the user input for number of intervals in the
-                    trapezoid rule. 
+                    trapezoid rule. The master then sums each slave trapezoid calculated, displays
+                    the approximate area, and awards the slave that did the most work.
 	NOTE:	na
-	FILES:	trapezoid.cpp
+	FILES:	trapezoid.cpp, child.cpp, trapSlave.h, makefile
 	IDE/COMPILER/INTERPRETER:	GNU g++
 	INSTRUCTION FOR COMPILATION AND EXECUTION:
 	1. type:	g++ --std=c++11 trapezoid.cpp -o trapezoid
+	OR
+                make    to use the makefile
 	2. type:	./trapezoid left right n m  to EXECUTE with the interval [left,right] and
                                             and integer n intervals and integer m subprocesses
 	OR
 	3. type:    ./trapezoid  for a HELP message
-	DISTRIBUTION/SUBTASKS:  Aaron Hinckley: 50%
-                                Initial problem solving strategy
-                                Code structure
-                            Zach Metcalf: 50%
+	DSTRIBUTION/SUBTASKS:  Aaron Hinckley: 60%
+                                Trapezoid rule framework
+                                Piping debugging
                                 Output formatting
-                                Debugging
+                                Makefile debugging
+                            Zach Metcalf: 40%
+                                Piping framework
+                                Makefile framework
 =============================================================*/
 
 #include <iostream>
 #include <unistd.h>
 #include <stdio.h>
-#include <sys/wait.h>
 #include <cstdlib>
-#include <fcntl.h>
 #include "trapSlave.h"
 
 using namespace std;

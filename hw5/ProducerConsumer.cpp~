@@ -85,7 +85,7 @@ int main(int argCount, char* argList[])
 	//--------------------------------------
 	for (int i=0; i<productCount; i++)
 	{
-		sleep(rand()%4);               // simulate the time for producing a product
+		sleep(rand()%1);               // simulate the time for producing a product
 		aProduct = rand()%1000;        // products are integers: 0~999
 		sem_wait(&empty);//<--------------zm ah add 
 		pthread_mutex_lock(&lock);//<-----zm ah add 

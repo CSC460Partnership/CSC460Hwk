@@ -14,6 +14,16 @@
 	INSTRUCTION FOR COMPILATION AND EXECUTION:
 	1. type: make                                      to COMPILE 
 	2. type: ./pc  productCount                        to EXECUTE
+	Distribution:
+		Zach Metcalf: 50%
+			Counting Semaphore
+			Binary Semaphore
+			Debugging
+		Aaron Hinckley: 50%
+			Counting Semaphore
+			Binary Semaphore
+			Debugging
+			
 ==============================================================================*/
 #include "pc.h"
 #include <semaphore.h>

@@ -1,15 +1,14 @@
-/*=============================================================================
+/*==============================================================================
 	PROGRAMMER:         Yang Wang Zach Metcalf Aaron Hinckley zm ah
 	COURSE:             CSC460: Operating System
 	MODIFIED BY:        Zach Metcalf Aaron Hinckley zm ah
 	LAST MODIFIED DATE: 11/12/2015 
 	DESCRIPTION:        A producer thread receives the count of the products n
-		through a command-line argument and creates n products
-		(simulated with n unique non-negative integers generated
-		randomly) for the consumer thread to consume. The two
-		threads share a bounded buffer of size bufSize.
-	NOTE:               The program is incomplete currently, and synchronization
-		between the two threads' operations are needed.
+						through a command-line argument and creates n products
+						(simulated with n unique non-negative integers generated
+						randomly) for the consumer thread to consume. The two
+						threads share a bounded buffer of size bufSize.
+	NOTE:               N/A
 	FILES:              ProducerConsumer.cpp, showBuf.cpp, pc.h, makefile
 	COMPILER:           GNU g++
 	INSTRUCTION FOR COMPILATION AND EXECUTION:
@@ -34,13 +33,12 @@ int main(int argCount, char* argList[])
 {
 	pthread_t  threadId;
 	int        productCount,     // the number of the products to be produced
-		       aProduct,         // a product is an integer: 0~999
+			   aProduct,         // a product is an integer: 0~999
 			   in = 0;           // index for the next generated product
 
 	sem_init(&empty, 0, bufSize); //<-----zm ah add 
 	// initialize the empty semaphore to the size of the buffer
 	sem_init(&full, 0, 0);//<-------------zm ah add 
-
 
 	//--------------------------------------
 	// 1. Validate the command-line arguments
@@ -128,7 +126,6 @@ void* consumerThread(void* arg)
 		pthread_mutex_unlock(&lock);//<---zm ah add 
 		sem_post(&empty);//<--------------zm ah add 
 	}
-
 	pthread_exit(NULL);
 }
 

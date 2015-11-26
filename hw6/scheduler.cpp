@@ -21,7 +21,6 @@
 
 #include <iostream>
 #include <unistd.h>
-#include <stdlib.h>
 #include <cstdlib>
 #include "info.h"
 
@@ -53,9 +52,6 @@ Info readPipe() {
 
 int main(int argc, char* argv[])
 {
-	int pipe;
-	const int rHead = 0, wHead = 1;
-
 	// arg error handeling
 	if (argc != 2) {
 		cout << "Incorrect number of arguments" << endl;
@@ -64,7 +60,6 @@ int main(int argc, char* argv[])
 	}
 	const int n = atoi(argv[1]);
 	// make sure n is positive
-	perror("test");
 	if (n < 0) {
 		cout << "The number must be positive" << endl;
 		exit(EXIT_FAILURE);
@@ -76,7 +71,7 @@ int main(int argc, char* argv[])
 	}
 
 	pid_t returnVal = fork();
-	if (returnVal == 0) {
+	if (returnVal > 0) {
 		// parent process
 
 	}
@@ -86,12 +81,13 @@ int main(int argc, char* argv[])
 	}
 	else {
 		// child process
-		execl("generator", '', , NULL);
+		execl("generator", &pipeToChild[rHead], &pipeToChild[wHead], NULL);
 		perror("execl");
 		exit(EXIT_FAILURE);
 	}
 
-
+	close(pipeToChild[rHead]);
+	close(pipeToChild[wHead]);
 
 	return 0;
 }

@@ -8,8 +8,7 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	int timeLapse = rand() % 50;
-	int burst = rand() % 1000 + 1;
+	int timeLapse, burst;
 	int prevTime = 0;
 	int n = atoi(argv[3]);
 	int bytes;
@@ -23,12 +22,14 @@ int main(int argc, char* argv[])
 	Info temp;
 	for (int i = 0; i < n; ++i)
 	{
+		burst = rand() % 1000 + 1;
+		timeLapse = rand() % 50;
+		
 		temp.arrivalTime = timeLapse + prevTime;
 		temp.burst = burst;
 		
 		prevTime = temp.arrivalTime;
-		burst = rand() % 1000 + 1;
-		timeLapse = rand() % 50;
+		
 		//temp into pipe;
 		
 		bytes = write(*argv[2], &temp, sizeof(temp));

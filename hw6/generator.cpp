@@ -27,12 +27,15 @@ int main(int argc, char* argv[])
 		temp.burst = burst;
 		
 		prevTime = temp.arrivalTime;
+		burst = rand() % 1000 + 1;
+		timeLapse = rand() % 50;
 		//temp into pipe;
 		
 		bytes = write(*argv[2], &temp, sizeof(temp));
 		if(bytes != sizeof(temp)) {
 			perror("write");
 		}
+		
 	}
 	
 	close(*argv[2]);

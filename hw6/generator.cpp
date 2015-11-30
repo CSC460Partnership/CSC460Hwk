@@ -2,12 +2,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "info.h"
-
+#include <time.h>
 using namespace std;
 
 
 int main(int argc, char* argv[])
 {
+	srand(time(0));
 	int timeLapse, burst;
 	int prevTime = 0;
 	int n = atoi(argv[3]);

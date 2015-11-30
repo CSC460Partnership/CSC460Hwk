@@ -1,5 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
+#include <unistd.h>
+#include "info.h"
 
 using namespace std;
 

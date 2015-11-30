@@ -1,4 +1,4 @@
-#include <iostream>/*=============================================================
+/*=============================================================
 	COURSE:				CSC460, assignment 6
 	PROGRAMMERS: 		Aaron Hinckley (ah) and Zach Metcalf (zm)
 	MODIFIED BY: 		N/A
@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 	}
 	else {
 		// child process
-		execl("generator", &pipeToChild[rHead], &pipeToChild[wHead], NULL);
+		execl("generator","", &pipeToChild[rHead], &pipeToChild[wHead], argv[1], NULL);
 		perror("execl");
 		exit(EXIT_FAILURE);
 	}

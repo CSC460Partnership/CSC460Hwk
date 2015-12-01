@@ -154,6 +154,29 @@ int main(int argc, char* argv[])
 		timer = storage.at(0).arrivalTime; // set initial timer to the earliest
 																			 // arrival time
 		displayInfo(storage);
+		cout << timer << endl;
+		readyQ.push_back(storage.at(0)); // add first process to readyQ
+		timer += readyQ.at(0).burst;
+		output.push_back(readyQ.at(0)); // add to output process done
+		readyQ.erase(readyQ.begin());
+		cout << "new timer " << timer << endl;
+
+		// look thru storage and add to readyQ
+		popuQ(storage, readyQ, 1); // added to readyQ
+		// already sorted from storage
+
+		// works from here up
+		displayInfo(readyQ);
+
+
+
+
+
+
+
+
+
+		/*
 		popuQ(storage,readyQ,0); // add from storage to readyQ if
 		sortQ(readyQ);
 	//	displayInfo(readyQ);

@@ -104,15 +104,17 @@ void sortStorage(vector<Info>& storage){
 		counter ++;
 	}
 }
-void popuQ(vector<Info>& storage, vector<Info>& readyQ, int index){
+int popuQ(vector<Info>& storage, vector<Info>& readyQ, int index){
 	//displayInfo(storage);
 	for(int i = index; i < storage.size(); i ++) {
 		if(storage.at(i).arrivalTime <= timer) {
 			readyQ.push_back(storage.at(i));
+
 		}
 		else {
 			break;
 		}
+		return i;
 	}
 	//displayInfo(readyQ);
 }
@@ -160,11 +162,23 @@ int main(int argc, char* argv[])
 		cout << "new timer " << timer << endl;
 
 		// look thru storage and add to readyQ
-		popuQ(storage, readyQ, 1); // added to readyQ
+		int index = popuQ(storage, readyQ, 1); // added to readyQ
 		// already sorted from storage
-
-		// works from here up
+		cout << "storage" << endl;
+		displayInfo(storage);
 		displayInfo(readyQ);
+		// works from here up
+
+		while (index < storage.size()) {
+			output.push_back(readyQ.at(0));
+			timer += readyQ.at(0).burst;
+			readyQ.erase(readyQ.begin());
+			index = popuQ(storage, readyQ, index);
+			cout << "index: " << index << endl;
+		}
+
+		cout << "output" << endl;
+		displayInfo(output);
 
 
 

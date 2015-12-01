@@ -45,7 +45,6 @@ void writePipe(Info temp) {
 		exit(EXIT_FAILURE);
 	}
 }
-
 Info readPipe() {
 	Info temp;
 	bytes = read(pipeToChild[rHead], &temp, sizeof(temp));
@@ -58,7 +57,7 @@ Info readPipe() {
 void displayInfo(vector<Info> temp){
 	cout << "------------------------------------------------------" << endl;
 	for(int i = 0; i < temp.size(); i ++){
-		cout << "Process number: " << i << endl;
+		cout << "Process number: " << temp.at(i).procNumber << endl;
 		cout << "	CPU Burst Time: " << temp.at(i).burst << endl;
 		cout << "	Arrival Time: " << temp.at(i).arrivalTime << endl;
 		cout << "	Wait Time: " << temp.at(i).waitTime << endl;
@@ -66,7 +65,6 @@ void displayInfo(vector<Info> temp){
     cout << "------------------------------------------------------" << endl;
 
 }
-
 void sortQ(vector<Info>& readyQ){
 	vector<Info> temp = readyQ;
 	int counter = 0;
@@ -156,21 +154,23 @@ int main(int argc, char* argv[])
 		displayInfo(storage);
 		popuQ(storage,readyQ,0); // add from storage to readyQ if
 		sortQ(readyQ);
-	//	displayInfo(readyQ);
+		displayInfo(readyQ);
 		timer += readyQ.at(0).burst;
-		// cout << "Herererer" << endl;
-
-	for(int j = 0; j < storage.size(); ++j) {
-		popuQ(storage, readyQ, j); // add from storage to readyQ if arrival time is
-															 // less than the current time
-		sortQ(readyQ); // sort readyQ by burst time
-		readyQ.at(j).waitTime = timer; // add wait time to struct
-		timer += readyQ.at(j).burst; // add current process time to the timer
-		output.push_back(readyQ.at(j)); // populate output
-
-	}
-	cout << "output" << endl;
-	displayInfo(output);
+	
+		for(int j = 1; j < storage.size(); ++j) {
+			cout << "Iteration: " << j << endl;
+			
+			popuQ(storage, readyQ, j); // add from storage to readyQ if arrival time is
+																 // less than the current time
+			displayInfo(readyQ);
+			sortQ(readyQ); // sort readyQ by burst time
+			readyQ.at(j).waitTime = timer; // add wait time to struct
+			timer += readyQ.at(j).burst; // add current process time to the timer
+			output.push_back(readyQ.at(j)); // populate output
+	
+		}
+		cout << "output" << endl;
+		displayInfo(output);
 
 		/*
 		while(storage.size() != 0){

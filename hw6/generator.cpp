@@ -31,6 +31,7 @@ int main(int argc, char* argv[])
 		temp.waitTime = 0;
 
 		prevTime = temp.arrivalTime;
+		temp.procNumber = i;
 
 		//temp into pipe;
 

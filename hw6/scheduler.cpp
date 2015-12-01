@@ -39,8 +39,6 @@ vector<Info> readyQ;
 vector<Info> storage;
 vector<Info> output;
 
-Info recieved, sent;
-
 void writePipe(Info temp) {
 	bytes = write(pipeToChild[wHead], &temp, sizeof(temp));
 	if (bytes != sizeof(temp)) {
@@ -109,19 +107,16 @@ void sortStorage(vector<Info>& storage){
 }
 void popuQ(vector<Info>& storage, vector<Info>& readyQ){
 	int stop;
-	//cout << "storage size: " << storage.size() << endl;
 	for(int i = 0; i < storage.size(); i ++) {
 		if(storage.at(i).arrivalTime <= timer) {
 			readyQ.push_back(storage.at(i));
 			stop = i;
-		//	storageCounter ++;
 		}
 		else {
 			break;
 		}
 	}
 	storage.erase(storage.begin(),storage.begin() + stop+1);
-	//displayInfo(readyQ);
 }
 
 void display(vector<Info> output)
@@ -166,14 +161,12 @@ int main(int argc, char* argv[])
 			storage.push_back(readPipe());
 			procCounter ++;
 		}
-		//displayInfo(storage);
 		//--------- Initialize by Adding Processes number 1 to queue -------
 		readyQ.push_back(storage.at(0));
 		storage.erase(storage.begin());
 		timer += readyQ.at(0).burst;  // Advance timer
 		output.push_back(readyQ.at(0));  // Send to the CPU
 		readyQ.erase(readyQ.begin());  // Delete from Queue
-
 		while(storage.size() != 0){
 
 			popuQ(storage,readyQ);
@@ -183,9 +176,7 @@ int main(int argc, char* argv[])
 				readyQ.erase(readyQ.begin());
 				timer += output.at(output.size()-1).burst;
 			}
-
 		}
-
 	}
 	else if (returnVal < 0) {
 		perror("fork");

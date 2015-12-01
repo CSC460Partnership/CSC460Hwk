@@ -24,6 +24,8 @@
 #include <cstdlib>
 #include "info.h"
 #include <vector>
+#include <fstream>
+#include <iomanip>
 
 using namespace std;
 
@@ -107,7 +109,7 @@ void sortStorage(vector<Info>& storage){
 }
 void popuQ(vector<Info>& storage, vector<Info>& readyQ){
 	int stop;
-	cout << "storage size: " << storage.size() << endl;
+	//cout << "storage size: " << storage.size() << endl;
 	for(int i = 0; i < storage.size(); i ++) {
 		if(storage.at(i).arrivalTime <= timer) {
 			readyQ.push_back(storage.at(i));
@@ -120,6 +122,22 @@ void popuQ(vector<Info>& storage, vector<Info>& readyQ){
 	}
 	storage.erase(storage.begin(),storage.begin() + stop+1);
 	//displayInfo(readyQ);
+}
+
+void display(vector<Info> output)
+{
+	ofstream myfile;
+	myfile.open("record.txt");
+	myfile << setw(15) << "Arrival Time";
+	myfile << setw(15) << "Process";
+	myfile << setw(15) << "CPU Burst";
+	myfile << setw(15) << "Waiting Time" << endl;
+	for (int i = 0; i < output.size(); ++i)
+	{
+		myfile << setw(15) << output.at(i).arrivalTime << setw(15) << output.at(i).procNumber << setw(15)
+		<< output.at(i).burst << setw(15) << output.at(i).waitTime << endl;
+	}
+	myfile.close();
 }
 int main(int argc, char* argv[])
 {
@@ -145,90 +163,29 @@ int main(int argc, char* argv[])
 	if (returnVal > 0) {
 		// Scheduler Code Here
 		while(procCounter != n){
-		//for(int i = 0; i < n; i ++){
 			storage.push_back(readPipe());
 			procCounter ++;
-		//	timer += readyQ.at(i).arrivalTime;
 		}
-		displayInfo(storage);
+		//displayInfo(storage);
 		//--------- Initialize by Adding Processes number 1 to queue -------
 		readyQ.push_back(storage.at(0));
 		storage.erase(storage.begin());
 		timer += readyQ.at(0).burst;  // Advance timer
 		output.push_back(readyQ.at(0));  // Send to the CPU
 		readyQ.erase(readyQ.begin());  // Delete from Queue
-		//storageCounter ++;  // Holds the index to the next process to arrive
-
-		displayInfo(output);
 
 		while(storage.size() != 0){
-			cout << "here" << endl;
-			if (readyQ.size() == 0 && storage.size() < 0){
-				timer = storage.at(0).arrivalTime;
-			}
+
 			popuQ(storage,readyQ);
-			cout << "readyQ" << endl;
-			displayInfo(readyQ);
-			cout << "storage" << endl;
-			displayInfo(storage);
-			cout << "output" << endl;
-			displayInfo(output);
 			while(readyQ.size() != 0){
 				output.push_back(readyQ.at(0));
 				output.at(output.size()-1).waitTime = timer - readyQ.at(0).arrivalTime;
 				readyQ.erase(readyQ.begin());
 				timer += output.at(output.size()-1).burst;
 			}
-			cout << "readyQ" << endl;
-			displayInfo(readyQ);
-			cout << "output" << endl;
-			displayInfo(output);
 
 		}
 
-
-
-
-
-
-
-
-
-
-		/*
-		popuQ(storage,readyQ,0); // add from storage to readyQ if
-		sortQ(readyQ);
-		displayInfo(readyQ);
-		timer += readyQ.at(0).burst;
-
-		for(int j = 1; j < storage.size(); ++j) {
-			cout << "Iteration: " << j << endl;
-
-			popuQ(storage, readyQ, j); // add from storage to readyQ if arrival time is
-																 // less than the current time
-			displayInfo(readyQ);
-			sortQ(readyQ); // sort readyQ by burst time
-			readyQ.at(j).waitTime = timer; // add wait time to struct
-			timer += readyQ.at(j).burst; // add current process time to the timer
-			output.push_back(readyQ.at(j)); // populate output
-
-		}
-		cout << "output" << endl;
-		displayInfo(output);
-
-		/*
-		while(storage.size() != 0){
-			popuQ(storage,readyQ,readyQ.size());
-			sortQ(readyQ);
-			readyQ.at(0).waitTime = timer;
-			output.push_back(readyQ.at(0));
-			//readyQ.erase(readyQ.begin());
-			timer += readyQ.at(0).burst;
-		}
-		*/
-
-		//cout << "timer: " << timer << endl;
-		//displayInfo(output);
 	}
 	else if (returnVal < 0) {
 		perror("fork");
@@ -243,6 +200,11 @@ int main(int argc, char* argv[])
 
 	close(pipeToChild[rHead]);
 	close(pipeToChild[wHead]);
+
+	display(output);
+	storage.resize(0);
+	readyQ.resize(0);
+	output.resize(0);
 
 	return 0;
 }

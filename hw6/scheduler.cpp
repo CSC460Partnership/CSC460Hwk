@@ -66,6 +66,7 @@ void displayInfo(vector<Info> temp){
     cout << "------------------------------------------------------" << endl;
 
 }
+
 void sortQ(vector<Info>& readyQ){
 	vector<Info> temp = readyQ;
 	int counter = 0;
@@ -96,7 +97,7 @@ void sortStorage(vector<Info>& storage){
 	while(counter != storage.size()){
 		index = 0;
 		for(int i = 0; i < temp.size(); i ++){
-			if(temp[i].arrivalTime <= temp[index].arrivalTime){  
+			if(temp[i].arrivalTime <= temp[index].arrivalTime){
 				index = i;
 			}
 		}
@@ -105,17 +106,13 @@ void sortStorage(vector<Info>& storage){
 		counter ++;
 	}
 }
-void popQ(vector<Info>& storage, vector<Info>& readyQ, int index){
+void popuQ(vector<Info>& storage, vector<Info>& readyQ, int index){
 	//displayInfo(storage);
-	for(int i = index; i < storage.size(); i ++){
-		cout << "i: " << i << endl;
-		cout << "timer: " << timer << endl;
-		if(storage.at(i).arrivalTime <= timer){
-			cout << " dlkfjsldjfdsfj" << endl;
-		
+	for(int i = index; i < storage.size(); i ++) {
+		if(storage.at(i).arrivalTime <= timer) {
 			readyQ.push_back(storage.at(i));
 		}
-		else{
+		else {
 			break;
 		}
 	}
@@ -151,26 +148,43 @@ int main(int argc, char* argv[])
 		//	timer += readyQ.at(i).arrivalTime;
 		}
 	//	displayInfo(storage);
-		sortStorage(storage);
-		timer = storage.at(0).arrivalTime;
-		
-		popQ(storage,readyQ,0);
-		// Scheduler selection
+
+	// start of Scheduler
+		sortStorage(storage); // sort storage based on arrival time
+		timer = storage.at(0).arrivalTime; // set initial timer to the earliest
+																			 // arrival time
+		displayInfo(storage);
+		popuQ(storage,readyQ,0); // add from storage to readyQ if
 		sortQ(readyQ);
 	//	displayInfo(readyQ);
 		timer += readyQ.at(0).burst;
-		cout << "Herererer" << endl;
-		
+		// cout << "Herererer" << endl;
+
+	for(int j = 0; j < storage.size(); ++j) {
+		popuQ(storage, readyQ, j); // add from storage to readyQ if arrival time is
+															 // less than the current time
+		sortQ(readyQ); // sort readyQ by burst time
+		readyQ.at(j).waitTime = timer; // add wait time to struct
+		timer += readyQ.at(j).burst; // add current process time to the timer
+		output.push_back(readyQ.at(j)); // populate output
+
+	}
+	cout << "output" << endl;
+	displayInfo(output);
+
+		/*
 		while(storage.size() != 0){
-			popQ(storage,readyQ,readyQ.size());
+			popuQ(storage,readyQ,readyQ.size());
 			sortQ(readyQ);
 			readyQ.at(0).waitTime = timer;
 			output.push_back(readyQ.at(0));
 			//readyQ.erase(readyQ.begin());
 			timer += readyQ.at(0).burst;
 		}
+		*/
+
 		//cout << "timer: " << timer << endl;
-		displayInfo(output);
+		//displayInfo(output);
 	}
 	else if (returnVal < 0) {
 		perror("fork");

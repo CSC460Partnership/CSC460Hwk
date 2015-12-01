@@ -30,8 +30,11 @@ using namespace std;
 int pipeToChild[2];
 int bytes;
 int timer = 0;
+int procCounter = 0;
 const int rHead = 0, wHead = 1;
 vector<Info> readyQ;
+vector<Info> storage;
+vector<Info> output;
 
 Info recieved, sent;
 
@@ -58,17 +61,18 @@ void displayInfo(vector<Info> temp){
 		cout << "Process number: " << i << endl;
 		cout << "	CPU Burst Time: " << temp.at(i).burst << endl;
 		cout << "	Arrival Time: " << temp.at(i).arrivalTime << endl;
-		cout << "	Total Time: " << temp.at(i).totalTime << endl;
+		cout << "	Wait Time: " << temp.at(i).waitTime << endl;
 	}
     cout << "------------------------------------------------------" << endl;
 
 }
-void sortQ(vector<Info> readyQ){
+void sortQ(vector<Info>& readyQ){
 	vector<Info> temp = readyQ;
 	int counter = 0;
+	int index = 0;
 	// Sorted Iteratively
 	while(counter != readyQ.size()){
-		int index;
+		index = 0;
 		for(int i = 0; i < temp.size(); i ++){
 			if(temp[i].burst < temp[index].burst){  // SJF Sorting
 				index = i;
@@ -80,10 +84,43 @@ void sortQ(vector<Info> readyQ){
 			}
 		}
 		readyQ[counter] = temp[index];
+		temp.erase(temp.begin()+index);
 		counter ++;
 	}
 }
-
+void sortStorage(vector<Info>& storage){
+	vector<Info> temp = storage;
+	int counter = 0;
+	int index = 0;
+	// Sorted Iteratively
+	while(counter != storage.size()){
+		index = 0;
+		for(int i = 0; i < temp.size(); i ++){
+			if(temp[i].arrivalTime <= temp[index].arrivalTime){  
+				index = i;
+			}
+		}
+		storage[counter] = temp[index];
+		temp.erase(temp.begin()+index);
+		counter ++;
+	}
+}
+void popQ(vector<Info>& storage, vector<Info>& readyQ, int index){
+	//displayInfo(storage);
+	for(int i = index; i < storage.size(); i ++){
+		cout << "i: " << i << endl;
+		cout << "timer: " << timer << endl;
+		if(storage.at(i).arrivalTime <= timer){
+			cout << " dlkfjsldjfdsfj" << endl;
+		
+			readyQ.push_back(storage.at(i));
+		}
+		else{
+			break;
+		}
+	}
+	//displayInfo(readyQ);
+}
 int main(int argc, char* argv[])
 {
 	// arg error handeling
@@ -107,12 +144,33 @@ int main(int argc, char* argv[])
 	pid_t returnVal = fork();
 	if (returnVal > 0) {
 		// Scheduler Code Here
-		for(int i = 0; i < n; i ++){
-			readyQ.push_back(readPipe());
-			timer += readyQ.at(i).arrivalTime;
+		while(procCounter != n){
+		//for(int i = 0; i < n; i ++){
+			storage.push_back(readPipe());
+			procCounter ++;
+		//	timer += readyQ.at(i).arrivalTime;
 		}
-		displayInfo(readyQ);
+	//	displayInfo(storage);
+		sortStorage(storage);
+		timer = storage.at(0).arrivalTime;
 		
+		popQ(storage,readyQ,0);
+		// Scheduler selection
+		sortQ(readyQ);
+	//	displayInfo(readyQ);
+		timer += readyQ.at(0).burst;
+		cout << "Herererer" << endl;
+		
+		while(storage.size() != 0){
+			popQ(storage,readyQ,readyQ.size());
+			sortQ(readyQ);
+			readyQ.at(0).waitTime = timer;
+			output.push_back(readyQ.at(0));
+			//readyQ.erase(readyQ.begin());
+			timer += readyQ.at(0).burst;
+		}
+		//cout << "timer: " << timer << endl;
+		displayInfo(output);
 	}
 	else if (returnVal < 0) {
 		perror("fork");

@@ -158,10 +158,14 @@ int main(int argc, char* argv[])
 		output.push_back(readyQ.at(0));  // Send to the CPU
 		readyQ.erase(readyQ.begin());  // Delete from Queue
 		//storageCounter ++;  // Holds the index to the next process to arrive
-		
+
 		displayInfo(output);
-		
+
 		while(storage.size() != 0){
+			cout << "here" << endl;
+			if (readyQ.size() == 0 && storage.size() < 0){
+				timer = storage.at(0).arrivalTime;
+			}
 			popuQ(storage,readyQ);
 			cout << "readyQ" << endl;
 			displayInfo(readyQ);
@@ -179,10 +183,10 @@ int main(int argc, char* argv[])
 			displayInfo(readyQ);
 			cout << "output" << endl;
 			displayInfo(output);
-		
+
 		}
-	
-		
+
+
 
 
 
@@ -196,10 +200,10 @@ int main(int argc, char* argv[])
 		sortQ(readyQ);
 		displayInfo(readyQ);
 		timer += readyQ.at(0).burst;
-	
+
 		for(int j = 1; j < storage.size(); ++j) {
 			cout << "Iteration: " << j << endl;
-			
+
 			popuQ(storage, readyQ, j); // add from storage to readyQ if arrival time is
 																 // less than the current time
 			displayInfo(readyQ);
@@ -207,7 +211,7 @@ int main(int argc, char* argv[])
 			readyQ.at(j).waitTime = timer; // add wait time to struct
 			timer += readyQ.at(j).burst; // add current process time to the timer
 			output.push_back(readyQ.at(j)); // populate output
-	
+
 		}
 		cout << "output" << endl;
 		displayInfo(output);

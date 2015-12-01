@@ -31,6 +31,7 @@ int pipeToChild[2];
 int bytes;
 int timer = 0;
 int procCounter = 0;
+int storageCounter = 0;
 const int rHead = 0, wHead = 1;
 vector<Info> readyQ;
 vector<Info> storage;
@@ -104,18 +105,20 @@ void sortStorage(vector<Info>& storage){
 		counter ++;
 	}
 }
-int popuQ(vector<Info>& storage, vector<Info>& readyQ, int index){
-	//displayInfo(storage);
-	for(int i = index; i < storage.size(); i ++) {
+void popuQ(vector<Info>& storage, vector<Info>& readyQ){
+	int stop;
+	cout << "storage size: " << storage.size() << endl;
+	for(int i = 0; i < storage.size(); i ++) {
 		if(storage.at(i).arrivalTime <= timer) {
 			readyQ.push_back(storage.at(i));
-
+			stop = i;
+		//	storageCounter ++;
 		}
 		else {
 			break;
 		}
-		return i;
 	}
+	storage.erase(storage.begin(),storage.begin() + stop+1);
 	//displayInfo(readyQ);
 }
 int main(int argc, char* argv[])
@@ -147,39 +150,39 @@ int main(int argc, char* argv[])
 			procCounter ++;
 		//	timer += readyQ.at(i).arrivalTime;
 		}
-	//	displayInfo(storage);
-
-	// start of Scheduler
-		sortStorage(storage); // sort storage based on arrival time
-		timer = storage.at(0).arrivalTime; // set initial timer to the earliest
-																			 // arrival time
 		displayInfo(storage);
-		cout << timer << endl;
-		readyQ.push_back(storage.at(0)); // add first process to readyQ
-		timer += readyQ.at(0).burst;
-		output.push_back(readyQ.at(0)); // add to output process done
-		readyQ.erase(readyQ.begin());
-		cout << "new timer " << timer << endl;
-
-		// look thru storage and add to readyQ
-		int index = popuQ(storage, readyQ, 1); // added to readyQ
-		// already sorted from storage
-		cout << "storage" << endl;
-		displayInfo(storage);
-		displayInfo(readyQ);
-		// works from here up
-
-		while (index < storage.size()) {
-			output.push_back(readyQ.at(0));
-			timer += readyQ.at(0).burst;
-			readyQ.erase(readyQ.begin());
-			index = popuQ(storage, readyQ, index);
-			cout << "index: " << index << endl;
-		}
-
-		cout << "output" << endl;
+		//--------- Initialize by Adding Processes number 1 to queue -------
+		readyQ.push_back(storage.at(0));
+		storage.erase(storage.begin());
+		timer += readyQ.at(0).burst;  // Advance timer
+		output.push_back(readyQ.at(0));  // Send to the CPU
+		readyQ.erase(readyQ.begin());  // Delete from Queue
+		//storageCounter ++;  // Holds the index to the next process to arrive
+		
 		displayInfo(output);
-
+		
+		while(storage.size() != 0){
+			popuQ(storage,readyQ);
+			cout << "readyQ" << endl;
+			displayInfo(readyQ);
+			cout << "storage" << endl;
+			displayInfo(storage);
+			cout << "output" << endl;
+			displayInfo(output);
+			while(readyQ.size() != 0){
+				output.push_back(readyQ.at(0));
+				output.at(output.size()-1).waitTime = timer - readyQ.at(0).arrivalTime;
+				readyQ.erase(readyQ.begin());
+				timer += output.at(output.size()-1).burst;
+			}
+			cout << "readyQ" << endl;
+			displayInfo(readyQ);
+			cout << "output" << endl;
+			displayInfo(output);
+		
+		}
+	
+		
 
 
 

@@ -77,16 +77,16 @@ void sortQ(vector<Info>& readyQ){
 	while(counter != readyQ.size()){
 		index = 0;
 		for(int i = 0; i < temp.size(); i ++){
-			if(temp[i].burst < temp[index].burst){  // SJF Sorting
+			if(temp.at(i).burst < temp.at(index).burst){  // SJF Sorting
 				index = i;
 			}
-			else if(temp[i].burst == temp[index].burst){  // FCFS Sorting
-				if(temp[i].arrivalTime < temp[index].arrivalTime){
+			else if(temp.at(i).burst == temp.at(index).burst){  // FCFS Sorting
+				if(temp.at(i).arrivalTime < temp.at(index).arrivalTime){
 					index = i;
 				}
 			}
 		}
-		readyQ[counter] = temp[index];
+		readyQ.at(counter) = temp.at(index);
 		temp.erase(temp.begin()+index);
 		counter ++;
 	}
@@ -99,11 +99,11 @@ void sortStorage(vector<Info>& storage){
 	while(counter != storage.size()){
 		index = 0;
 		for(int i = 0; i < temp.size(); i ++){
-			if(temp[i].arrivalTime <= temp[index].arrivalTime){
+			if(temp.at(i).arrivalTime <= temp.at(index).arrivalTime){
 				index = i;
 			}
 		}
-		storage[counter] = temp[index];
+		storage.at(counter) = temp.at(index);
 		temp.erase(temp.begin()+index);
 		counter ++;
 	}

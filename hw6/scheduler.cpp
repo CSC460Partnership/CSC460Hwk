@@ -4,7 +4,9 @@
 	MODIFIED BY: 		N/A
 	LAST MODIFIED DATE:	11-17-2015
 	DESCRIPTION:
-	NOTE:					N/A
+	NOTE:					Approximately 1 in 50 times this is executed there
+								is a segmentation fault.
+
 	FILES:						generate.cpp
 	IDE/COMPILER/INTERPRETER:	GNU g++
 	INSTRUCTION FOR COMPILATION AND EXECUTION:
@@ -26,6 +28,7 @@
 #include <vector>
 #include <fstream>
 #include <iomanip>
+#include <stdio.h>
 
 using namespace std;
 
@@ -112,15 +115,10 @@ void popuQ(vector<Info>& storage, vector<Info>& readyQ){
 			readyQ.push_back(storage.at(i));
 			stop = i;
 		}
-		else {
-			break;
-		}
 	}
 	storage.erase(storage.begin(),storage.begin() + stop+1);
 }
-
-void display(vector<Info> output)
-{
+void display(vector<Info> output) {
 	ofstream myfile;
 	myfile.open("record.txt");
 	myfile << setw(15) << "Arrival Time";
@@ -168,7 +166,6 @@ int main(int argc, char* argv[])
 		output.push_back(readyQ.at(0));  // Send to the CPU
 		readyQ.erase(readyQ.begin());  // Delete from Queue
 		while(storage.size() != 0){
-
 			popuQ(storage,readyQ);
 			while(readyQ.size() != 0){
 				output.push_back(readyQ.at(0));

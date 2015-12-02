@@ -1,0 +1,121 @@
+commit e58a3145bafcc2ae59a7d9f73345fa4995706ac3
+Author: Zach Metcalf <zach.metcalf847@gmail.com>
+Date:   Tue Dec 1 16:09:46 2015 -0600
+
+    output formating
+
+commit 7644bdc9f82d04180bd6ed7162c9d90c95988fb8
+Author: Zach Metcalf <zach.metcalf847@gmail.com>
+Date:   Tue Dec 1 15:32:51 2015 -0600
+
+    bug fix
+
+commit 86a7a98c915846aa69aa77dda7163d651cc0ab4a
+Author: LeftyJekyll <alhinckley777@gmail.com>
+Date:   Tue Dec 1 15:21:23 2015 -0600
+
+    Almost done !!!
+
+commit 08fa38739bcb1e900e57195157d9b485ada21e65
+Author: Zach Metcalf <zach.metcalf847@gmail.com>
+Date:   Tue Dec 1 13:48:16 2015 -0600
+
+    not working
+
+commit 4bc365712c5e8f8c1dd2c9a43dc6fadc85ed42bb
+Merge: 7124a0a 4403314
+Author: LeftyJekyll <alhinckley777@gmail.com>
+Date:   Tue Dec 1 13:33:56 2015 -0600
+
+    Merge branch 'master' of https://github.com/CSC460Partnership/HwkRepo
+
+commit 7124a0ab0f47a2991bb3c78406cfb361fcfc10e7
+Author: LeftyJekyll <alhinckley777@gmail.com>
+Date:   Tue Dec 1 13:33:24 2015 -0600
+
+    Added Changes
+
+commit 44033146ad2810d29c66b668549ef090da55ad8b
+Author: Zach Metcalf <zach.metcalf847@gmail.com>
+Date:   Tue Dec 1 13:32:53 2015 -0600
+
+    restart
+
+commit 2b044363f22d363b202bfc002cf5108121d94cc4
+Author: Zach Metcalf <zach.metcalf847@gmail.com>
+Date:   Tue Dec 1 13:13:17 2015 -0600
+
+    not working
+
+commit 3aa5a6cafab036f52d462825e5f246a215dc9372
+Author: LeftyJekyll <alhinckley777@gmail.com>
+Date:   Mon Nov 30 18:57:06 2015 -0600
+
+    Work in progress
+
+commit d20d9fc0de8f7c0ffc3585590ba1c2637f95a66b
+Author: Zach Metcalf <zach.metcalf847@gmail.com>
+Date:   Mon Nov 30 16:41:37 2015 -0600
+
+    fixed random
+
+commit c87777a95fb90445b80edce4c02cc98ebd29ca00
+Author: Zach Metcalf <zach.metcalf847@gmail.com>
+Date:   Mon Nov 30 16:36:07 2015 -0600
+
+    dumb random error
+
+commit 44180320bd2f6acac1c3eacb46962687b3845fad
+Author: LeftyJekyll <alhinckley777@gmail.com>
+Date:   Mon Nov 30 16:32:10 2015 -0600
+
+    Added Scheduler functionality
+
+commit 2359e4c81b50b04449976a7aaaf1796911db3378
+Merge: 71e1aaf d4b5c9c
+Author: Zach Metcalf <zach.metcalf847@gmail.com>
+Date:   Mon Nov 30 16:28:19 2015 -0600
+
+    Merge branch 'master' of https://github.com/CSC460Partnership/HwkRepo
+
+commit 71e1aaf661388643079ac731f322bdf37345146f
+Author: Zach Metcalf <zach.metcalf847@gmail.com>
+Date:   Mon Nov 30 16:26:41 2015 -0600
+
+    blah
+
+commit d4b5c9c265757cef9d77c7fb4344700682cf61bf
+Author: Zach Metcalf <ducky92@users.noreply.github.com>
+Date:   Mon Nov 30 16:21:39 2015 -0600
+
+    Delete scheduler
+
+commit 66d3031469eac20358391c4812299e107f1774e1
+Author: Zach Metcalf <zach.metcalf847@gmail.com>
+Date:   Mon Nov 30 16:20:55 2015 -0600
+
+    fixed library errors
+
+commit ebe986477e7427c16b7950e120293ae55a9a3612
+Author: Zach Metcalf <zach.metcalf847@gmail.com>
+Date:   Mon Nov 30 16:06:45 2015 -0600
+
+    generator v1
+
+commit c0d29ce510f2ec1e69ed9c3bef1e60a8968784d9
+Author: Zach Metcalf <zach.metcalf847@gmail.com>
+Date:   Mon Nov 30 14:24:57 2015 -0600
+
+    update make file
+
+commit f4c25cf000e7c9771e45a0ee7bbf20aaab2e637c
+Author: Zach Metcalf <zach.metcalf847@gmail.com>
+Date:   Thu Nov 26 15:55:55 2015 -0600
+
+    minor child fix
+
+commit d371e794b3f736bafb2050439bc8b62ba63a2c52
+Author: Zach Metcalf <zach.metcalf847@gmail.com>
+Date:   Thu Nov 26 15:41:03 2015 -0600
+
+    rough outline for program
